@@ -8,7 +8,7 @@
       Col,
       Modal,
       Table,
-  } from 'sveltestrap';
+  } from '@sveltestrap/sveltestrap';
 
   // Stop current schedule
   let stop_modal_open = false;

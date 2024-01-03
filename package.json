@@ -19,8 +19,9 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
+    "@sveltestrap/sveltestrap": "^6.1.1",
+    "multicast-dns": "^7.2.5",
     "svelte-spa-router": "^3.3.0",
-    "sveltestrap": "github:bestguy/sveltestrap#pull/574/head",
     "uplot": "^1.6.26"
   }
 }

@@ -1,7 +1,8 @@
 <script lang="ts">
   import { stored_schedules } from "../lib/stores";
   import "uplot/dist/uPlot.min.css";
-  import { Input, Table, Button, Icon, Modal, Row, Col } from "sveltestrap";
+  import { Input, Table, Button, Icon, Modal, Row, Col } from '@sveltestrap/sveltestrap';
+;
 
   // autofocus for input fields: https://svelte.dev/repl/aac847deb62844f6ac31716c0354b09f?version=3.42.1
   async function autofocus(e) {

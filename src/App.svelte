@@ -15,7 +15,7 @@
     Nav,
     NavItem,
     NavLink
-  } from 'sveltestrap';
+  } from '@sveltestrap/sveltestrap';
 
   let theme: string = 'auto';
   let nav_open: boolean = false;
