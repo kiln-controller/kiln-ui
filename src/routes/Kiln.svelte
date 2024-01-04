@@ -82,15 +82,34 @@ tbody {
       </Row>
     </Modal>
 
-    {#if $current_state.schedule.name !== ""}
+
+    {#if Object.keys($current_state).length === 0}
+      <span class="h2 ps-2">Loading the Kiln data...</span><br>
+    {:else if $current_state.schedule.name !== ""}
       <span class="h2 ps-2">{$current_state.schedule.name}</span><br>
       <Button class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()}><Icon name="stop" /></Button>
-      <span class="ps-2">
-      Current temperature: {Math.round($current_state.temperature)}<br>
-      Current running step: {$current_state.step}<br>
-      Current  {$current_state.schedule.steps}<br>
-      </span>
       <svelte:component this={uPlot} {data}/>
+      <span class="ps-2">Current temperature: {Math.round($current_state.temperature)}<br></span>
+      <Table class="mt-4" hover>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Ramp in °C/h</th>
+            <th>Target °C</th>
+            <th colspan="2">Hold in minutes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each $current_state.schedule.steps as schedule, index}
+            <tr>
+              <th scope="row">{index}</th>
+              {#each schedule as step}
+                <td>{step}</td>
+              {/each}
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
     {:else}
       <span class="h2 ps-2">No schedule running</span><br>
       <span class="ps-2">
