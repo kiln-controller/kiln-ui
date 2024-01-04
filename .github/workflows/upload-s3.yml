@@ -7,13 +7,14 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       # TODO: split build to own workflow
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-      # - run: npm ci
-      - run: npm install
+      - run: npm ci
       - run: npm run build --if-present
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
