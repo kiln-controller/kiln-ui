@@ -1,6 +1,7 @@
 <script lang="ts">
   import { stored_logs, current_state } from "../lib/stores";
   import uPlot from "uplot";
+  import { onMount } from 'svelte';
   import {
       Icon,
       Button,
@@ -23,32 +24,55 @@
   }
 
   // uplot: https://github.com/leeoniya/uPlot/tree/master/docs
-  let plotContainer;
-  $: $current_state, redraw();
-  function redraw() {
-    let x: Array<number> = [Date.now()/1000 - $current_state.runtime];  // timestamps
-    let y: Array<number> = [$current_state.start_temperature];  // temperature
-    for (let step of $current_state.schedule.steps) {
-      // previous timestamp plus time to reach target in seconds
-      let ramptime: number = x.at(-1) + (step[1]/step[0])*3600;
-      y.push(step[1], step[1]);
-      // add ramptime plus hold to array
-      x.push(ramptime, ramptime + step[2]*60);
-    }
-    let data = [x, y];
-    console.log(data);
-    const opts = {
+  let plotContainer: HTMLElement;
+  let plot: uPlot;
+
+  onMount(() => {
+    plot = new uPlot({
         width: 600,
         height: 300,
-        series: [{label: "Hours"}, {label: "°C", stroke: "teal"}]
-    };
-    let plot = new uPlot(opts, data, plotContainer);
+        series: [
+          {label: "Hours", value: "{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}"},
+          {label: "°C", stroke: "teal"}
+        ],
+        // 24h time format: https://github.com/leeoniya/uPlot/issues/83#issuecomment-570392055
+        axes: [
+          {
+            values: [
+              [3600 * 24 * 365,    "{YYYY}",               7,   "{YYYY}"                 ],
+              [3600 * 24 * 28,     "{MMM}",                7,   "{MMM}\n{YYYY}"          ],
+              [3600 * 24,          "{M}/{D}",              7,   "{M}/{D}\n{YYYY}"        ],
+              [3600,               "{HH}:{mm}",            4,   "{HH}\n{M}/{D}"          ],
+              [60,                 "{HH}:{mm}",            4,   "{HH}:{mm}\n{M}/{D}"     ],
+              [1,                  "{HH}:{mm}:{ss}",       4,   "{HH}:{mm}:{ss}\n{M}/{D}"],
+            ],
+          }
+        ]
+    }, [], plotContainer);
+	});
 
-    plot.setCursor({
-      top: plot.valToPos($current_state.temperature, 'x'),
-      left: plot.valToPos(Date.now()/1000, 'y'),
-    })
-  }
+  $: $current_state, redraw();
+  function redraw() {
+    if(plot) {
+      let x: Array<number> = [Date.now()/1000 - $current_state.runtime];  // timestamps
+      let y: Array<number> = [$current_state.start_temperature];  // temperature
+      for (let step of $current_state.schedule.steps) {
+        // previous timestamp plus time to reach target in seconds
+        let ramptime: number = x.at(-1) + (step[1]/step[0])*3600;
+        y.push(step[1], step[1]);
+        // add ramptime plus hold to array
+        x.push(ramptime, ramptime + step[2]*60);
+      }
+      plot.setData([x, y]);
+
+      // https://github.com/leeoniya/uPlot/issues/843#issuecomment-1602552129
+      plot.setCursor({
+        top: plot.valToPos($current_state.temperature, 'y'),
+        left: plot.valToPos(Date.now()/1000, 'x'),
+      })
+      console.log("redraw");
+    }
+	}
 </script>
 <style lang=css>
 tbody {
