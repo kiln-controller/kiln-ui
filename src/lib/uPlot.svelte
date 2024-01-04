@@ -16,11 +16,12 @@
         height: 400,
         series: [
             {label: "Hours", value: "{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}"},
-            {label: "°C", stroke: "teal"}
+            {label: "°C", stroke: window.getComputedStyle(targ).getPropertyValue("--bs-primary")}
         ],
         // 24h time format: https://github.com/leeoniya/uPlot/issues/83#issuecomment-570392055
         axes: [
           {
+            stroke: window.getComputedStyle(targ).getPropertyValue("color"),
             values: [
               [3600 * 24 * 365,    "{YYYY}",               7,   "{YYYY}"                 ],
               [3600 * 24 * 28,     "{MMM}",                7,   "{MMM}\n{YYYY}"          ],
@@ -29,6 +30,9 @@
               [60,                 "{HH}:{mm}",            4,   "{HH}:{mm}\n{M}/{D}"     ],
               [1,                  "{HH}:{mm}:{ss}",       4,   "{HH}:{mm}:{ss}\n{M}/{D}"],
             ],
+          },
+          {
+            stroke: window.getComputedStyle(targ).getPropertyValue("color")
           }
         ]
       }, data, targ);
