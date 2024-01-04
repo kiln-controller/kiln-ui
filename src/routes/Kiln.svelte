@@ -1,7 +1,6 @@
 <script lang="ts">
   import { stored_logs, current_state } from "../lib/stores";
-  import uPlot from "uplot";
-  import { onMount } from 'svelte';
+	import uPlot from "../lib/uPlot.svelte";
   import {
       Icon,
       Button,
@@ -23,37 +22,12 @@
     if (!response.ok) { console.log(response) };
   }
 
-  // uplot: https://github.com/leeoniya/uPlot/tree/master/docs
-  let plotContainer: HTMLElement;
-  let plot: uPlot;
-
-  onMount(() => {
-    plot = new uPlot({
-        width: 600,
-        height: 300,
-        series: [
-          {label: "Hours", value: "{YYYY}-{MM}-{DD} {HH}:{mm}:{ss}"},
-          {label: "°C", stroke: "teal"}
-        ],
-        // 24h time format: https://github.com/leeoniya/uPlot/issues/83#issuecomment-570392055
-        axes: [
-          {
-            values: [
-              [3600 * 24 * 365,    "{YYYY}",               7,   "{YYYY}"                 ],
-              [3600 * 24 * 28,     "{MMM}",                7,   "{MMM}\n{YYYY}"          ],
-              [3600 * 24,          "{M}/{D}",              7,   "{M}/{D}\n{YYYY}"        ],
-              [3600,               "{HH}:{mm}",            4,   "{HH}\n{M}/{D}"          ],
-              [60,                 "{HH}:{mm}",            4,   "{HH}:{mm}\n{M}/{D}"     ],
-              [1,                  "{HH}:{mm}:{ss}",       4,   "{HH}:{mm}:{ss}\n{M}/{D}"],
-            ],
-          }
-        ]
-    }, [], plotContainer);
-	});
-
+  // uplot
+  let data: [number[], number[]];
   $: $current_state, redraw();
+
   function redraw() {
-    if(plot) {
+    if($current_state.runtime) {  // skip when undefined
       let x: Array<number> = [Date.now()/1000 - $current_state.runtime];  // timestamps
       let y: Array<number> = [$current_state.start_temperature];  // temperature
       for (let step of $current_state.schedule.steps) {
@@ -63,17 +37,11 @@
         // add ramptime plus hold to array
         x.push(ramptime, ramptime + step[2]*60);
       }
-      plot.setData([x, y]);
-
-      // https://github.com/leeoniya/uPlot/issues/843#issuecomment-1602552129
-      plot.setCursor({
-        top: plot.valToPos($current_state.temperature, 'y'),
-        left: plot.valToPos(Date.now()/1000, 'x'),
-      })
-      console.log("redraw");
+      data = [x, y];
     }
-	}
+  }
 </script>
+
 <style lang=css>
 tbody {
   line-height: 1;
@@ -122,7 +90,7 @@ tbody {
       Current running step: {$current_state.step}<br>
       Current  {$current_state.schedule.steps}<br>
       </span>
-      <div bind:this={plotContainer}></div>
+      <svelte:component this={uPlot} {data}/>
     {:else}
       <span class="h2 ps-2">No schedule running</span><br>
       <span class="ps-2">

@@ -1,8 +1,7 @@
 <script lang="ts">
   import { stored_schedules } from "../lib/stores";
-  import "uplot/dist/uPlot.min.css";
-  import { Input, Table, Button, Icon, Modal, Row, Col } from '@sveltestrap/sveltestrap';
-;
+	import uPlot from "../lib/uPlot.svelte";
+  import { Input, Table, Button, Icon, Modal, Row, Col, Tooltip } from '@sveltestrap/sveltestrap';
 
   // autofocus for input fields: https://svelte.dev/repl/aac847deb62844f6ac31716c0354b09f?version=3.42.1
   async function autofocus(e) {
@@ -95,32 +94,27 @@
     $stored_schedules = $stored_schedules;
   }
 
-  // uplot: https://github.com/leeoniya/uPlot/tree/master/docs
-  //   let plotContainer;
-  //   function redraw() {
-  //     // currently the previous schedule
-  //     // let x: Array = [1, 2, 3, 4, 5];
-  //     // let y: Array = [1, 3, 2, 5, 4];
-  //     let x: Array<number> = [0];
-  //     let y: Array<number> = [0];
-  //     for (let step of $stored_schedules[selected_schedule]) {
-  //       // previous timestamp plus time to reach target
-  //       let ramptime: number = x.at(-1) + step[1]/step[0];
-  //       y.push(step[1], step[1]);
-  //       // add ramptime plus hold to array
-  //       x.push(ramptime, ramptime + step[2]/60);
-  //     }
-  //     let data = [x, y];
-  //     console.log(data);
-  //     const opts = {
-  //         width: 600,
-  //         height: 300,
-  //         scales: {x: {time: false}},
-  //         series: [{label: "Hours"}, {label: "°C", stroke: "red"}],
-  //     };
+  // uplot
+  // uplot
+  let data: [number[], number[]];
+  $: $stored_schedules, redraw();
 
-  //     new uPlot(opts, data, plotContainer);
-  //   }
+  function redraw() {
+    if(selected_schedule) {
+      let x: Array<number> = [Date.now()/1000];
+      let y: Array<number> = [0];
+      for (let step of $stored_schedules[selected_schedule]) {
+        if(step[0] || step[1] || step[2]) {
+          // previous timestamp plus time to reach target in seconds
+          let ramptime: number = x.at(-1) + (step[1]/step[0])*3600;
+          y.push(step[1], step[1]);
+          // add ramptime plus hold to array
+          x.push(ramptime, ramptime + step[2]*60);
+        }
+      }
+      data = [x, y];
+    }
+  }
 </script>
 
 <div class="input-group mb-4 px-2">
@@ -201,6 +195,8 @@
       </Col>
     </Row>
   </Modal>
+
+  <svelte:component this={uPlot} {data}/>
 
   <Table class="mt-4" hover>
     <thead>
