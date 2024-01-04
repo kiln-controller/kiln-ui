@@ -101,7 +101,7 @@ tbody {
         </thead>
         <tbody>
           {#each $current_state.schedule.steps as schedule, index}
-            <tr>
+            <tr class={index === $current_state.step ? 'table-active' : ''}>
               <th scope="row">{index}</th>
               {#each schedule as step}
                 <td>{step}</td>
