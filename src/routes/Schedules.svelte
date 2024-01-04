@@ -95,9 +95,11 @@
   }
 
   // uplot
-  // uplot
   let data: [number[], number[]];
+  // redraw graph when data changes ($stored_schedules)
   $: $stored_schedules, redraw();
+  // redraw graph when switching between schemas
+  $: selected_schedule, redraw();
 
   function redraw() {
     if(selected_schedule) {
