@@ -124,9 +124,12 @@
       <option value={name}>{name}</option>
     {/each}
   </Input>
-  <Button color="success" on:click={() => toggleScheduleNameModalOpen("add")}
+  <Button id="btn-create" color="success" on:click={() => toggleScheduleNameModalOpen("add")}
     ><Icon name="plus-lg" /></Button
   >
+  <Tooltip target="btn-create" placement="bottom">
+    Create
+  </Tooltip>
 </div>
 
 <Modal
@@ -152,27 +155,43 @@
 {#if selected_schedule}
   <span class="h2 ps-2">{selected_schedule}</span>
   <Button
+    id="btn-delete"
     class="float-end me-2"
     color="danger"
     on:click={() => deleteSchedule(selected_schedule)}
     ><Icon name="trash" /></Button
   >
+  <Tooltip target="btn-delete" placement="bottom">
+    Delete
+  </Tooltip>
   <Button
+    id="btn-edit"
     class="float-end me-1"
     on:click={() => toggleScheduleNameModalOpen("move")}
     ><Icon name="pencil" /></Button
   >
+  <Tooltip target="btn-edit" placement="bottom">
+    Change name
+  </Tooltip>
   <!--copy icon seems missing in sveltestrap -->
   <Button
+    id="btn-copy"
     class="float-end me-1"
     on:click={() => toggleScheduleNameModalOpen("copy")}
     ><Icon name="subtract" /></Button
   >
+  <Tooltip target="btn-copy" placement="bottom">
+    Copy
+  </Tooltip>
   <Button
+    id="btn-upload"
     class="float-end me-1"
     color="warning"
     on:click={() => toggleUploadModalOpen()}><Icon name="upload" /></Button
   >
+  <Tooltip target="btn-upload" placement="bottom">
+    Upload
+  </Tooltip>
 
   <Modal
     body
@@ -226,9 +245,13 @@
       {/each}
       <tr>
         <td colspan="5"
-          ><Button block outline on:click={() => addStep()}
+          ><Button block outline id="btn-add-step" on:click={() => addStep()}
             ><Icon name="plus-lg" /></Button
-          ></td
+          >
+          <Tooltip target="btn-add-step" placement="bottom">
+            New step
+          </Tooltip>
+        </td
         >
       </tr>
     </tbody>
