@@ -74,7 +74,7 @@
           <a href="/kiln" class="nav-link" use:link use:active={'/kiln'}>Kiln</a>
         </NavItem>
         <NavItem>
-          <NavLink href="https://github.com/wilmardo/kiln-controller"><Icon name="github" /></NavLink>
+          <NavLink href="https://github.com/kiln-controller"><Icon name="github" /></NavLink>
         </NavItem>
       </Nav>
     </Collapse>
