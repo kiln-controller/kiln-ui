@@ -14,11 +14,12 @@
   } from '@sveltestrap/sveltestrap';
 
   // Upload new firmware
+  // https://github.com/esphome/esphome-webserver/blob/main/v2/esp-app.ts#L99
   let firmware: HTMLFormElement;
   let upload_modal_open = false;
   const toggleUploadModalOpen = () => (upload_modal_open = !upload_modal_open);
   async function uploadFirmware() {
-    const response = await fetch(import.meta.env.VITE_KILN_URL + "upload", {
+    const response = await fetch(import.meta.env.VITE_KILN_URL + "update", {
       method: 'POST',
       body: new FormData(firmware)
     });
@@ -99,7 +100,7 @@ tbody {
     </Modal>
 
     <Modal body header="Firmware upload" isOpen={upload_modal_open} toggle={toggleUploadModalOpen}>
-      <form on:submit|preventDefault={uploadFirmware} bind:this={firmware}>
+      <form on:submit|preventDefault={uploadFirmware} bind:this={firmware} enctype="multipart/form-data">
       <Input type="file" accept=".bin"/>
       <Row class="mt-4">
       <Col>
