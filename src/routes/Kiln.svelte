@@ -8,12 +8,28 @@
       Col,
       Modal,
       Table,
+      Input,
+      Form,
+      Tooltip
   } from '@sveltestrap/sveltestrap';
+
+  // Upload new firmware
+  let firmware: HTMLFormElement;
+  let upload_modal_open = false;
+  const toggleUploadModalOpen = () => (upload_modal_open = !upload_modal_open);
+  async function uploadFirmware() {
+    const response = await fetch(import.meta.env.VITE_KILN_URL + "upload", {
+      method: 'POST',
+      body: new FormData(firmware)
+    });
+    toggleUploadModalOpen();
+    if (!response.ok) { console.log(response) };
+  }
 
   // Stop current schedule
   let stop_modal_open = false;
   const toggleStopModalOpen = () => (stop_modal_open = !stop_modal_open);
-  async function uploadSchedule() {
+  async function stopSchedule() {
     const response = await fetch(import.meta.env.VITE_KILN_URL + "kiln/schedule", {
       method: 'DELETE',
       headers: {'Content-Type': 'application/json'}
@@ -72,22 +88,36 @@ tbody {
 
 <Row>
   <Col>
-    <Modal body header="Confirm upload schedule" isOpen={stop_modal_open} toggle={toggleStopModalOpen}>
+    <Modal body header="Confirm stop schedule" isOpen={stop_modal_open} toggle={toggleStopModalOpen}>
       Are you sure you want to stop the running <code>{$current_state.schedule.name}</code> schedule on the kiln?
       <Row class="mt-4">
       <Col>
         <Button color="danger" on:click={() => toggleStopModalOpen()}>Cancel</Button>
-        <Button class="float-end" color="success" on:click={() => uploadSchedule()}>Confirm</Button>
+        <Button class="float-end" color="success" on:click={() => stopSchedule()}>Confirm</Button>
       </Col>
       </Row>
     </Modal>
 
+    <Modal body header="Firmware upload" isOpen={upload_modal_open} toggle={toggleUploadModalOpen}>
+      <form on:submit|preventDefault={uploadFirmware} bind:this={firmware}>
+      <Input type="file" accept=".bin"/>
+      <Row class="mt-4">
+      <Col>
+        <Button on:click={() => toggleUploadModalOpen()}>Cancel</Button>
+        <Button class="float-end" color="danger" type="submit">Confirm</Button>
+      </Col>
+      </Row>
+      </form>
+    </Modal>
 
     {#if Object.keys($current_state).length === 0}
       <span class="h2 ps-2">Loading the Kiln data...</span><br>
     {:else if $current_state.schedule.name !== ""}
+      <Button id="btn-stop-schedule" class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()}><Icon name="stop" /></Button>
+      <Tooltip target="btn-stop-schedule" placement="bottom">
+        Stop schedule
+      </Tooltip>
       <span class="h2 ps-2">{$current_state.schedule.name}</span><br>
-      <Button class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()}><Icon name="stop" /></Button>
       <svelte:component this={uPlot} {data}/>
       <span class="ps-2">Current temperature: {Math.round($current_state.temperature)}<br></span>
       <Table class="mt-4" hover>
@@ -111,6 +141,10 @@ tbody {
         </tbody>
       </Table>
     {:else}
+      <Button id="btn-upload-firmware" class="float-end me-1" color="warning" on:click={() => toggleUploadModalOpen()}><Icon name="wrench" /></Button>
+      <Tooltip target="btn-upload-firmware" placement="bottom">
+        Upload firmware
+      </Tooltip>
       <span class="h2 ps-2">No schedule running</span><br>
       <span class="ps-2">
       Current temperature: {Math.round($current_state.temperature)}<br>
