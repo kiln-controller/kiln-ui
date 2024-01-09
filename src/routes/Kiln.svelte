@@ -121,7 +121,7 @@ tbody {
       <span class="h2 ps-2">{$current_state.schedule.name}</span><br>
       <svelte:component this={uPlot} {data}/>
       <span class="ps-2">Current temperature: {Math.round($current_state.temperature)}<br></span>
-      <Table class="mt-4" hover>
+      <Table class="mt-4">
         <thead>
           <tr>
             <th>Step</th>

@@ -219,7 +219,7 @@
 
   <svelte:component this={uPlot} {data}/>
 
-  <Table class="mt-4" hover>
+  <Table class="mt-4">
     <thead>
       <tr>
         <th>Step</th>
