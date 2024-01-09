@@ -89,6 +89,7 @@ tbody {
 
 <Row>
   <Col>
+    <div class="ps-2">
     <Modal body header="Confirm stop schedule" isOpen={stop_modal_open} toggle={toggleStopModalOpen}>
       Are you sure you want to stop the running <code>{$current_state.schedule.name}</code> schedule on the kiln?
       <Row class="mt-4">
@@ -112,15 +113,18 @@ tbody {
     </Modal>
 
     {#if Object.keys($current_state).length === 0}
-      <span class="h2 ps-2">Loading the Kiln data...</span><br>
+      <span class="h2">Loading the Kiln data...</span><br>
     {:else if $current_state.schedule.name !== ""}
       <Button id="btn-stop-schedule" class="float-end me-1" color="danger" on:click={() => toggleStopModalOpen()}><Icon name="stop" /></Button>
       <Tooltip target="btn-stop-schedule" placement="bottom">
         Stop schedule
       </Tooltip>
-      <span class="h2 ps-2">{$current_state.schedule.name}</span><br>
+      <span class="h2">{$current_state.schedule.name}</span><br>
+
       <svelte:component this={uPlot} {data}/>
-      <span class="ps-2">Current temperature: {Math.round($current_state.temperature)}<br></span>
+
+      Current temperature: {Math.round($current_state.temperature)}<br>
+
       <Table class="mt-4">
         <thead>
           <tr>
@@ -146,11 +150,10 @@ tbody {
       <Tooltip target="btn-upload-firmware" placement="bottom">
         Upload firmware
       </Tooltip>
-      <span class="h2 ps-2">No schedule running</span><br>
-      <span class="ps-2">
+      <span class="h2">No schedule running</span><br>
       Current temperature: {Math.round($current_state.temperature)}<br>
-      </span>
     {/if}
+  </div>
   </Col>
   <Col>
     <Table borderless size="sm">
