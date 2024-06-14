@@ -13,19 +13,8 @@
       Tooltip
   } from '@sveltestrap/sveltestrap';
 
-  // Upload new firmware
-  // https://github.com/esphome/esphome-webserver/blob/main/v2/esp-app.ts#L99
-  let firmware: HTMLFormElement;
   let upload_modal_open = false;
   const toggleUploadModalOpen = () => (upload_modal_open = !upload_modal_open);
-  async function uploadFirmware() {
-    const response = await fetch(import.meta.env.VITE_KILN_URL + "update", {
-      method: 'POST',
-      body: new FormData(firmware)
-    });
-    toggleUploadModalOpen();
-    if (!response.ok) { console.log(response) };
-  }
 
   // Stop current schedule
   let stop_modal_open = false;
@@ -100,9 +89,14 @@ tbody {
       </Row>
     </Modal>
 
+    <!-- https://github.com/esphome/esphome-webserver/blob/86108e055a819b9ce655181f72988fa535dd12c7/packages/v3/src/esp-app.ts#L152 -->
     <Modal body header="Firmware upload" isOpen={upload_modal_open} toggle={toggleUploadModalOpen}>
-      <form on:submit|preventDefault={uploadFirmware} bind:this={firmware} enctype="multipart/form-data">
-      <Input type="file" accept=".bin"/>
+      <form
+        method="POST"
+        action={import.meta.env.VITE_KILN_URL + "update"}
+        enctype="multipart/form-data"
+      >
+      <Input type="file" name="file" accept="application/octet-stream"/>
       <Row class="mt-4">
       <Col>
         <Button on:click={() => toggleUploadModalOpen()}>Cancel</Button>
