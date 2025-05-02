@@ -19,8 +19,8 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "@sveltestrap/sveltestrap": "^6.1.1",
-    "svelte-spa-router": "^3.3.0",
-    "uplot": "^1.6.26"
+    "@sveltestrap/sveltestrap": "^7.1.0",
+    "svelte-spa-router": "^4.0.1",
+    "uplot": "^1.6.32"
   }
 }
