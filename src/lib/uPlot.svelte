@@ -1,14 +1,20 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   // https://github.com/leeoniya/uPlot/issues/556#issuecomment-1271653615
   import 'uplot/dist/uPlot.min.css';
 	import uPlot, { type AlignedData } from 'uplot';
 
-	export let data: AlignedData | undefined;
+  interface Props {
+    data: AlignedData | undefined;
+  }
 
-  let targ: HTMLElement;
-  let plot: uPlot;
+  let { data }: Props = $props();
 
-	$: {
+  let targ: HTMLElement = $state();
+  let plot: uPlot = $state();
+
+	run(() => {
 		if (targ) {
       targ.innerHTML = "";  // force the graph to be redrawn and not append and keep the old one
       plot = new uPlot({
@@ -37,7 +43,7 @@
         ]
       }, data, targ);
     }
-  }
+  });
   // window.addEventListener("resize", e => {
   //   plot.setSize({
   //     width: targ.offsetWidth - 100,
@@ -47,4 +53,4 @@
 
 </script>
 
-<div bind:this={targ} />
+<div bind:this={targ}></div>

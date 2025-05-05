@@ -17,10 +17,10 @@
     NavLink
   } from '@sveltestrap/sveltestrap';
 
-  let theme: string = 'auto';
-  let nav_open: boolean = false;
-  function navUpdate(event) {
-    nav_open = event.detail.isOpen;
+  // TODO: update to false, should toggle but doesnt work?
+  let isOpen: boolean = $state(true);
+  function handleUpdate(event) {
+    isOpen = event.detail.isOpen;
   }
 
   // start gathering logs
@@ -60,11 +60,11 @@
 </script>
 
 <main style="height: 100vh">
-  <Styles {theme} />
-  <Navbar color="primary-subtle mb-4" expand="md">
+  <Styles theme='auto' />
+  <Navbar class="mb-4" color="primary-subtle" expand="md">
     <NavbarBrand href="/">Kiln Controller</NavbarBrand>
-    <NavbarToggler on:click={() => (nav_open = !nav_open)} />
-    <Collapse isOpen={nav_open} navbar expand="md" on:update={navUpdate}>
+    <NavbarToggler on:click={() => (isOpen = !isOpen)} />
+    <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
       <Nav class="ms-auto" navbar>
         <NavItem>
           <!-- use plain href to utilize use:active from spa-router -->

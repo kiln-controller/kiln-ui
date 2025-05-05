@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { stored_schedules } from "../lib/stores";
 	import uPlot from "../lib/uPlot.svelte";
   import { Input, Table, Button, Icon, Modal, Row, Col, Tooltip } from '@sveltestrap/sveltestrap';
@@ -9,11 +11,11 @@
     e.focus();
   }
 
-  let selected_schedule: string = "";
+  let selected_schedule: string = $state("");
 
   // schedule modal
-  let new_schedule_name: string = "";
-  let schedule_name_modal_open: boolean = false;
+  let new_schedule_name: string = $state("");
+  let schedule_name_modal_open: boolean = $state(false);
   let schedule_name_model_action: string = "";
   function toggleScheduleNameModalOpen(action: string) {
     schedule_name_modal_open = !schedule_name_modal_open;
@@ -64,7 +66,7 @@
   }
 
   // upload selected schedule to the Kiln
-  let upload_modal_open = false;
+  let upload_modal_open = $state(false);
   const toggleUploadModalOpen = () => (upload_modal_open = !upload_modal_open);
   async function uploadSchedule() {
     const response = await fetch(
@@ -95,11 +97,7 @@
   }
 
   // uplot
-  let data: [number[], number[]];
-  // redraw graph when data changes ($stored_schedules)
-  $: $stored_schedules, redraw();
-  // redraw graph when switching between schemas
-  $: selected_schedule, redraw();
+  let data: [number[], number[]] = $state();
 
   function redraw() {
     if(selected_schedule) {
@@ -117,6 +115,14 @@
       data = [x, y];
     }
   }
+  // redraw graph when data changes ($stored_schedules)
+  run(() => {
+    $stored_schedules, redraw();
+  });
+  // redraw graph when switching between schemas
+  run(() => {
+    selected_schedule, redraw();
+  });
 </script>
 
 <div class="input-group mb-4 px-2">
@@ -217,7 +223,8 @@
     </Row>
   </Modal>
 
-  <svelte:component this={uPlot} {data}/>
+  {@const SvelteComponent = uPlot}
+  <SvelteComponent {data}/>
 
   <Table class="mt-4">
     <thead>
@@ -232,8 +239,8 @@
       {#each $stored_schedules[selected_schedule] as schedule, index}
         <tr>
           <th scope="row">{index}</th>
-          {#each schedule as step}
-            <td><Input required type="number" bind:value={step} /></td>
+          {#each schedule as step, i}
+            <td><Input required type="number" bind:value={schedule[i]} /></td>
           {/each}
           <td
             ><Button

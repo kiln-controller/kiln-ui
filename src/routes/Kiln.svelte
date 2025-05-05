@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { stored_logs, current_state } from "../lib/stores";
 	import uPlot from "../lib/uPlot.svelte";
   import {
@@ -9,15 +11,14 @@
       Modal,
       Table,
       Input,
-      Form,
       Tooltip
   } from '@sveltestrap/sveltestrap';
 
-  let upload_modal_open = false;
+  let upload_modal_open = $state(false);
   const toggleUploadModalOpen = () => (upload_modal_open = !upload_modal_open);
 
   // Stop current schedule
-  let stop_modal_open = false;
+  let stop_modal_open = $state(false);
   const toggleStopModalOpen = () => (stop_modal_open = !stop_modal_open);
   async function stopSchedule() {
     const response = await fetch(import.meta.env.VITE_KILN_URL + "kiln/schedule", {
@@ -29,8 +30,7 @@
   }
 
   // uplot
-  let data: [number[], number[]];
-  $: $current_state, redraw();
+  let data: [number[], number[]] = $state();
 
   function redraw() {
     if($current_state.runtime) {  // skip when undefined
@@ -46,6 +46,9 @@
       data = [x, y];
     }
   }
+  run(() => {
+    $current_state, redraw();
+  });
 </script>
 
 <style lang=css>
@@ -54,6 +57,7 @@ tbody {
   font-size: 0.8rem;
 
   /* https://github.com/esphome/esphome-webserver/blob/main/v2/esp-log.ts#L105 */
+  /* TODO: not readable in light mode */
   & .v {
     color: #888888;
   }
@@ -115,7 +119,8 @@ tbody {
       </Tooltip>
       <span class="h2">{$current_state.schedule.name}</span><br>
 
-      <svelte:component this={uPlot} {data}/>
+      {@const SvelteComponent = uPlot}
+      <SvelteComponent {data}/>
 
       Current temperature: {Math.round($current_state.temperature)}<br>
 
