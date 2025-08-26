@@ -71,7 +71,7 @@
           <a href="/" class="nav-link" use:link use:active={'/'}>Schedules</a>
         </NavItem>
         <NavItem>
-          <a href="/kiln" class="nav-link" use:link use:active={'/kiln'}>Kiln</a>
+          <a href="/status" class="nav-link" use:link use:active={'/status'}>Status</a>
         </NavItem>
         <NavItem>
           <NavLink href="https://github.com/kiln-controller"><Icon name="github" /></NavLink>
