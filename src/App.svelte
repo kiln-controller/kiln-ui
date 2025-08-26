@@ -82,3 +82,9 @@
 
   <Router {routes}/>
 </main>
+<footer class="fixed-bottom bg-body-tertiary">
+  <div class="text-center p-2">
+    <a href="https://github.com/kiln-controller"><Icon name="github" /></a>
+    kilny.nl
+  </div>
+</footer>
