@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { stored_logs, current_state } from "../lib/stores";
 	import uPlot from "../lib/uPlot.svelte";
   import {
@@ -48,9 +46,8 @@
       data = [x, y];
     }
   }
-  run(() => {
-    $current_state, redraw();
-  });
+  // Redraw graph when dependencies change
+  $effect(redraw);
 </script>
 
 <style lang=css>

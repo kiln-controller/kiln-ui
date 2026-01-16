@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from 'svelte/legacy';
-
   import { stored_schedules } from "../lib/stores";
 	import uPlot from "../lib/uPlot.svelte";
   import { Input, Table, Button, Icon, Modal, Row, Col, Tooltip } from '@sveltestrap/sveltestrap';
@@ -118,14 +116,8 @@
       data = [x, y];
     }
   }
-  // redraw graph when data changes ($stored_schedules)
-  run(() => {
-    $stored_schedules, redraw();
-  });
-  // redraw graph when switching between schemas
-  run(() => {
-    selected_schedule, redraw();
-  });
+  // Redraw graph when dependencies change
+  $effect(redraw);
 </script>
 
 <div class="input-group mb-4 px-2">
