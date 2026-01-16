@@ -3,18 +3,22 @@
 	import uPlot from "../lib/uPlot.svelte";
   import { Input, Table, Button, Icon, Modal, Row, Col, Tooltip } from '@sveltestrap/sveltestrap';
 
-  // autofocus for input fields: https://svelte.dev/repl/aac847deb62844f6ac31716c0354b09f?version=3.42.1
-  async function autofocus(e) {
-    await tick();
-    e.focus();
-  }
-
   let selected_schedule: string = $state("");
 
   // schedule modal
   let new_schedule_name: string = $state("");
   let schedule_name_modal_open: boolean = $state(false);
   let schedule_name_model_action: string = "";
+  let schedule_name_input: HTMLInputElement;
+
+  $effect(() => {
+    if (schedule_name_modal_open) {
+      setTimeout(() => {
+        schedule_name_input?.focus();
+      }, 0);
+    }
+  });
+
   function toggleScheduleNameModalOpen(action: string) {
     schedule_name_modal_open = !schedule_name_modal_open;
     schedule_name_model_action = action;
@@ -147,7 +151,9 @@
       name="scheduleName"
       placeholder="Schedule name"
       bind:value={new_schedule_name}
+      bind:inner={schedule_name_input}
       on:keydown={(e) => scheduleNameModal(e)}
+      class="no-focus-outline"
     />
     <Button color="primary" on:click={(e) => scheduleNameModal(e)}
       ><Icon name="send" /></Button
