@@ -240,7 +240,7 @@
         <tr>
           <th scope="row">{index}</th>
           {#each schedule as step, i}
-            <td><Input required type="number" bind:value={schedule[i]} /></td>
+            <td><Input required type="number" bind:value={$stored_schedules[selected_schedule][index][i]} /></td>
           {/each}
           <td
             ><Button
