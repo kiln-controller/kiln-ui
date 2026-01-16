@@ -143,7 +143,7 @@
   body
   header="Schedule name"
   isOpen={schedule_name_modal_open}
-  toggle={toggleScheduleNameModalOpen}
+  toggle={() => toggleScheduleNameModalOpen("")}
 >
   <div class="input-group">
     <Input
