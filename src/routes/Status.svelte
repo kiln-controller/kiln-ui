@@ -32,13 +32,15 @@
   // uplot
   let data: [number[], number[]] = $state();
 
+  // TODO: almost the same as redraw in Schedules, refactor
   function redraw() {
     if($current_state.runtime) {  // skip when undefined
       let x: Array<number> = [Date.now()/1000 - $current_state.runtime];  // timestamps
       let y: Array<number> = [$current_state.start_temperature];  // temperature
       for (let step of $current_state.schedule.steps) {
-        // previous timestamp plus time to reach target in seconds
-        let ramptime: number = x.at(-1) + (step[1]/step[0])*3600;
+        // previous timestamp plus time to reach target in seconds (also don't break when dividing by zero)
+        const ramp_duration_seconds = step[0] === 0 ? 0 : (Math.abs(step[1] - y.at(-1)) / step[0]) * 3600;
+        let ramptime: number = x.at(-1) + ramp_duration_seconds;
         y.push(step[1], step[1]);
         // add ramptime plus hold to array
         x.push(ramptime, ramptime + step[2]*60);
