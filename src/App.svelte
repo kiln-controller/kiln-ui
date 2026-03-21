@@ -24,6 +24,10 @@
     isOpen = event.detail.isOpen;
   }
 
+  type ConnectionStatus = 'pending' | 'connected' | 'error';
+  let connectionStatus: ConnectionStatus = $state('pending');
+  let lastStatusCode: number | null = $state(null);
+
   // start gathering logs
   // stock esphome
   const esphome = new EventSource(import.meta.env.VITE_KILN_URL + "events");
@@ -60,11 +64,14 @@
     pollInterval = setInterval(async () => {
       try {
         const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state");
+        lastStatusCode = res.status;
         if (res.ok) {
+          connectionStatus = 'connected';
           $current_state = await res.json();
         }
       } catch (e) {
-        // device unreachable — keep last known state
+        connectionStatus = 'error';
+        lastStatusCode = null;
       }
     }, 1000);
   });
@@ -88,6 +95,11 @@
         </NavItem>
         <NavItem>
           <NavLink href="https://github.com/kiln-controller"><Icon name="github" /></NavLink>
+        </NavItem>
+        <NavItem title="API: {import.meta.env.VITE_KILN_URL}kiln/state{lastStatusCode ? ' (HTTP ' + lastStatusCode + ')' : ''}">
+          <span class="nav-link">
+            <Icon name="circle-fill" class={connectionStatus === 'connected' ? 'text-success' : connectionStatus === 'error' ? 'text-danger' : 'text-secondary'} />
+          </span>
         </NavItem>
       </Nav>
     </Collapse>
