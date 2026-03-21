@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
   import Router from 'svelte-spa-router';
   import {link} from 'svelte-spa-router';
   import active from 'svelte-spa-router/active'
@@ -26,7 +27,6 @@
   // start gathering logs
   // stock esphome
   const esphome = new EventSource(import.meta.env.VITE_KILN_URL + "events");
-  const kiln_api = new EventSource(import.meta.env.VITE_KILN_URL + "kiln/state");
   // https://esphome.io/web-api/#event-source-api
   esphome.addEventListener("log", (e: MessageEvent) => {
     // https://github.com/esphome/esphome-webserver/blob/main/v2/esp-log.ts#L21
@@ -53,10 +53,23 @@
     $stored_logs.unshift(record);
     $stored_logs = $stored_logs;
   });
-  kiln_api.addEventListener("state", (e: MessageEvent) => {
-    console.log(e.data);
-    $current_state = JSON.parse(e.data);
+
+  let pollInterval: ReturnType<typeof setInterval>;
+
+  onMount(() => {
+    pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch(import.meta.env.VITE_KILN_URL + "kiln/state");
+        if (res.ok) {
+          $current_state = await res.json();
+        }
+      } catch (e) {
+        // device unreachable — keep last known state
+      }
+    }, 1000);
   });
+
+  onDestroy(() => clearInterval(pollInterval));
 </script>
 
 <main style="height: 100vh">
