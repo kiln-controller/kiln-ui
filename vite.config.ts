@@ -11,7 +11,12 @@ export default defineConfig(({ mode }) => {
       '/api': {
         target: env.KILN_DEVICE_URL,
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.removeHeader('if-none-match')
+          })
+        }
       }
     } : undefined
   },
